@@ -79,4 +79,10 @@ function handleLocation (gps) {
 function displayMap(lat, long) {
   currentMarker.setLatLng([lat, long])
   map.setView([lat, long])
+  L.Routing.control({
+    waypoints: [
+      L.latLng(lat, long),
+      L.latLng(57.6792, 11.949)
+    ]
+  }).addTo(map);
 }
