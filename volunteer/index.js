@@ -116,19 +116,33 @@ function getFoodBanks(postcode) {
   })
   .then(data => data.json())
   .then(data => {
-    const {name, location} = data[0];
-    const [lat, lng] = location.split(",").map(parseFloat) 
-    waypoints.push(L.latLng(lat, lng))
-    route.setWaypoints(waypoints);
-
-    bankMarker.setLatLng(L.latLng(lat, lng))
-    bankMarker.bindTooltip(name, 
-    {
-        permanent: true, 
-        direction: 'right'
-    }
-);
-
+    if (data[0] !== undefined) {
+      const {name, location} = data[0];
+      const [lat, lng] = location.split(",").map(parseFloat) 
+      waypoints.push(L.latLng(52.479703606246844, -1.8976560630025816))
+      waypoints.push(L.latLng(lat, lng))
+      route.setWaypoints(waypoints);
+  
+      bankMarker.setLatLng(L.latLng(lat, lng))
+      bankMarker.bindTooltip(name, 
+      {
+          permanent: true, 
+          direction: 'right'
+      })
+      } else {
+        const lat = 52.079703606246844;
+        const lng = -1.4976560630025816;
+        waypoints.push(L.latLng(52.479703606246844, -1.8976560630025816))
+        waypoints.push(L.latLng(lat, lng))
+        route.setWaypoints(waypoints);
+    
+        bankMarker.setLatLng(L.latLng(lat, lng))
+        bankMarker.bindTooltip("Food Bank", 
+        {
+            permanent: true, 
+            direction: 'right'
+        })
+      }
   })
   .catch(err => console.log(err))
 
