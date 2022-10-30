@@ -4,7 +4,8 @@ const searchButton = document.getElementById("button-search");
 const searchBar = document.getElementById("text-search")
 const currentButton = document.getElementById("button-current")
 
-let waypoints = [];
+
+
 const map = L.map('map').setView([0, 0], 13);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
@@ -12,6 +13,10 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 let currentMarker = L.marker([0, 0]).addTo(map);
+let bankMarker = L.marker([0,0]).addTo(map);
+
+let waypoints = [];
+let route = L.Routing.control({waypoints:waypoints}).addTo(map);
 
 searchButton.addEventListener("click", getCoordsFromPostcode);
 currentButton.addEventListener("click", () => {
@@ -83,9 +88,7 @@ function displayMap(lat, lng) {
   currentMarker.setLatLng([lat, lng])
   map.setView([lat, lng])
 
-  let route = L.Routing.control({waypoints:waypoints}).addTo(map);
   waypoints.push(L.latLng(lat, lng));
-  waypoints.push(L.latLng(57.6792, 11.949))
   route.setWaypoints(waypoints)
 
   cordToPost(lat, lng, getFoodBanks)
@@ -106,27 +109,28 @@ function cordToPost(lat, lng, callback) {
 }
 
 function getFoodBanks(postcode) {
-  // const url = "http://localhost:7027/foodbank/GetNearestFoodBankLocation?location=" + postcode.replace(" ", "%20");
-  // console.log("got postcode")
-  // fetch(url,{
-  //   "method": "GET",
-  // })
-  // .then(data => console.log(data))
-  // .then(data => console.log(data))
-  // .catch(err => console.log(err))
+  const url = "http://localhost:7027/foodbank/GetNearestFoodBankLocation?location=" + postcode.replace(" ", "%20");
+  console.log("got postcode")
+  fetch(url,{
+    "method": "GET",
+  })
+  .then(data => data.json())
+  .then(data => {
+    const {name, location} = data[0];
+    const [lat, lng] = location.split(",").map(parseFloat) 
+    waypoints.push(L.latLng(lat, lng))
+    route.setWaypoints(waypoints);
 
-  var requestOptions = {
-    method: 'GET',
-    redirect: 'follow',
-    headhers: {
-      'Accept': 'application/json',
-      'Content-type': 'application/json'
-    },
-    "Access-Control-Allow-Origin": "*"
-  };
+    bankMarker.setLatLng(L.latLng(lat, lng))
+    bankMarker.bindTooltip(name, 
+    {
+        permanent: true, 
+        direction: 'right'
+    }
+);
+
+  })
+  .catch(err => console.log(err))
+
   
-  fetch("http://localhost:7027/FoodBank/GetNearestFoodBankLocation?location=B15 2GR", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
 }
