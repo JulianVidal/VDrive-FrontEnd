@@ -92,9 +92,6 @@ function displayMap(lat, lng) {
 
 function cordToPost(lat, lng, callback) {
   fetch("https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lng + "&format=jsonv2", {
-  "headers": {
-
-  },
   "method": "GET",
   "mode": "cors",
   "credentials": "omit"
@@ -103,16 +100,13 @@ function cordToPost(lat, lng, callback) {
   .then(data => {
     const {address} = data;
     const {postcode} = address;
-    console.log(postcode);
-
     callback(postcode)
-
   });
 }
 
 function getFoodBanks(postcode) {
   const url = "https://428e-31-121-195-186.eu.ngrok.io/foodbank/GetNearestFoodBankLocation?location=" + postcode.replace(" ", "%20");
-
+  console.log("got postcode")
   fetch(url,{
     "method": "GET",
     // "mode": "cors",
