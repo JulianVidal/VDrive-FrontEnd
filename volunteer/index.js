@@ -120,6 +120,7 @@ function getFoodBanks(postcode) {
       const {name, location} = data[0];
       const [lat, lng] = location.split(",").map(parseFloat) 
       waypoints.push(L.latLng(52.479703606246844, -1.8976560630025816))
+      waypoints.push(L.latLng(52.509703606246844, -1.9076560630025816))
       waypoints.push(L.latLng(lat, lng))
       route.setWaypoints(waypoints);
   
