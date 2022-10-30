@@ -4,7 +4,7 @@ const searchButton = document.getElementById("button-search");
 const searchBar = document.getElementById("text-search")
 const currentButton = document.getElementById("button-current")
 
-const waypoints = [];
+let waypoints = [];
 const map = L.map('map').setView([0, 0], 13);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
@@ -79,6 +79,7 @@ function handleLocation (gps) {
 }
 
 function displayMap(lat, lng) {
+  waypoints = [];
   currentMarker.setLatLng([lat, lng])
   map.setView([lat, lng])
 
@@ -105,14 +106,27 @@ function cordToPost(lat, lng, callback) {
 }
 
 function getFoodBanks(postcode) {
-  const url = "https://428e-31-121-195-186.eu.ngrok.io/foodbank/GetNearestFoodBankLocation?location=" + postcode.replace(" ", "%20");
-  console.log("got postcode")
-  fetch(url,{
-    "method": "GET",
-    // "mode": "cors",
-    "credentials": "omit",
+  // const url = "http://localhost:7027/foodbank/GetNearestFoodBankLocation?location=" + postcode.replace(" ", "%20");
+  // console.log("got postcode")
+  // fetch(url,{
+  //   "method": "GET",
+  // })
+  // .then(data => console.log(data))
+  // .then(data => console.log(data))
+  // .catch(err => console.log(err))
+
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+    headhers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    },
     "Access-Control-Allow-Origin": "*"
-  })
-  .then(data => data.json())
-  .then(data => console.log(data))
+  };
+  
+  fetch("http://localhost:7027/FoodBank/GetNearestFoodBankLocation?location=B15 2GR", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
 }
