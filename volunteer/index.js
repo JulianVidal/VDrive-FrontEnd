@@ -3,9 +3,11 @@ const interval = setInterval(getLocation, 1000);
 const searchButton = document.getElementById("button-search");
 const searchBar = document.getElementById("text-search")
 const currentButton = document.getElementById("button-current")
+
+const waypoints = [];
 const map = L.map('map').setView([0, 0], 13);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 30,
+  maxZoom: 19,
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
@@ -76,13 +78,47 @@ function handleLocation (gps) {
   displayMap(gps.coords.latitude, gps.coords.longitude)
 }
 
-function displayMap(lat, long) {
-  currentMarker.setLatLng([lat, long])
-  map.setView([lat, long])
-  L.Routing.control({
-    waypoints: [
-      L.latLng(lat, long),
-      L.latLng(57.6792, 11.949)
-    ]
-  }).addTo(map);
+function displayMap(lat, lng) {
+  currentMarker.setLatLng([lat, lng])
+  map.setView([lat, lng])
+
+  let route = L.Routing.control({waypoints:waypoints}).addTo(map);
+  waypoints.push(L.latLng(lat, lng));
+  waypoints.push(L.latLng(57.6792, 11.949))
+  route.setWaypoints(waypoints)
+
+  cordToPost(lat, lng, getFoodBanks)
+}
+
+function cordToPost(lat, lng, callback) {
+  fetch("https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lng + "&format=jsonv2", {
+  "headers": {
+
+  },
+  "method": "GET",
+  "mode": "cors",
+  "credentials": "omit"
+  })
+  .then(data => data.json())
+  .then(data => {
+    const {address} = data;
+    const {postcode} = address;
+    console.log(postcode);
+
+    callback(postcode)
+
+  });
+}
+
+function getFoodBanks(postcode) {
+  const url = "https://428e-31-121-195-186.eu.ngrok.io/foodbank/GetNearestFoodBankLocation?location=" + postcode.replace(" ", "%20");
+
+  fetch(url,{
+    "method": "GET",
+    // "mode": "cors",
+    "credentials": "omit",
+    "Access-Control-Allow-Origin": "*"
+  })
+  .then(data => data.json())
+  .then(data => console.log(data))
 }
