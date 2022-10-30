@@ -62,3 +62,17 @@ a{
     padding-right: 5%;
     background-color:white;
 }
+
+.ghost{
+    position:absolute;
+    z-index: -1;
+    height: 10vw;
+    left: 0;
+}
+
+.ghost2{
+    position:absolute;
+    z-index: -1;
+    height: 10vw;
+    right: 0;
+}
